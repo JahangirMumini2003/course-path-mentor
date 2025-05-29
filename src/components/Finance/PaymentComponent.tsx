@@ -9,6 +9,7 @@ import { CreditCard } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../hooks/useData';
 import { useToast } from '@/hooks/use-toast';
+import { Payment } from '../../types';
 
 interface PaymentComponentProps {
   paymentId: string;
@@ -54,7 +55,7 @@ export const PaymentComponent: React.FC<PaymentComponentProps> = ({
       if (p.id === paymentId) {
         const newPaid = p.paid + paymentAmount;
         const newRemaining = p.remaining - paymentAmount;
-        const newStatus = newRemaining === 0 ? 'completed' : newRemaining < p.amount ? 'partial' : 'pending';
+        const newStatus: Payment['status'] = newRemaining === 0 ? 'completed' : newRemaining < p.amount ? 'partial' : 'pending';
         
         return {
           ...p,
