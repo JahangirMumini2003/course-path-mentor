@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,14 +6,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BookOpen, Users, DollarSign, Settings, LogOut, Plus, Edit, Trash, Upload } from 'lucide-react';
+import { BookOpen, Users, DollarSign, MessageCircle, LogOut, Plus, Edit, Trash } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../hooks/useData';
+import { ChatComponent } from '../Chat/ChatComponent';
 import { Course, User } from '../../types';
 
 export const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const { courses, enrollments, payments, setCourses, setPayments } = useData();
+  const { courses, enrollments, payments, messages, setCourses, setPayments } = useData();
   const [activeTab, setActiveTab] = useState('courses');
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -157,6 +157,7 @@ export const AdminDashboard: React.FC = () => {
             <TabsTrigger value="courses">Курсы</TabsTrigger>
             <TabsTrigger value="students">Студенты</TabsTrigger>
             <TabsTrigger value="finances">Финансы</TabsTrigger>
+            <TabsTrigger value="messages">Сообщения</TabsTrigger>
           </TabsList>
 
           <TabsContent value="courses" className="space-y-4">
@@ -405,6 +406,18 @@ export const AdminDashboard: React.FC = () => {
                     })}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="messages" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Сообщения</CardTitle>
+                <CardDescription>Общение со студентами</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChatComponent />
               </CardContent>
             </Card>
           </TabsContent>

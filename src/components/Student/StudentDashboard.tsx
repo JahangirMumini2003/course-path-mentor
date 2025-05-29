@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,9 @@ import { Label } from '@/components/ui/label';
 import { BookOpen, DollarSign, MessageCircle, User, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../hooks/useData';
+import { ChatComponent } from '../Chat/ChatComponent';
+import { EnrollmentButton } from '../Enrollment/EnrollmentButton';
+import { PaymentComponent } from '../Finance/PaymentComponent';
 
 export const StudentDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -19,7 +21,6 @@ export const StudentDashboard: React.FC = () => {
   const myCourses = courses.filter(c => myEnrollments.some(e => e.courseId === c.id));
   const availableCourses = courses.filter(c => !myEnrollments.some(e => e.courseId === c.id));
   const myPayments = payments.filter(p => p.userId === user?.id);
-  const myMessages = messages.filter(m => m.toUserId === user?.id || m.fromUserId === user?.id);
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -31,6 +32,10 @@ export const StudentDashboard: React.FC = () => {
       currency: 'RUB',
       minimumFractionDigits: 0,
     }).format(price);
+  };
+
+  const isEnrolled = (courseId: string) => {
+    return myEnrollments.some(e => e.courseId === courseId);
   };
 
   return (
@@ -159,9 +164,10 @@ export const StudentDashboard: React.FC = () => {
                         </span>
                         <span className="text-sm text-gray-500">{course.duration}</span>
                       </div>
-                      <Button className="w-full">
-                        Записаться на курс
-                      </Button>
+                      <EnrollmentButton 
+                        courseId={course.id}
+                        isEnrolled={isEnrolled(course.id)}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -174,35 +180,15 @@ export const StudentDashboard: React.FC = () => {
               {myPayments.map((payment) => {
                 const course = courses.find(c => c.id === payment.courseId);
                 return (
-                  <Card key={payment.id}>
-                    <CardHeader>
-                      <CardTitle className="text-lg">{course?.title}</CardTitle>
-                      <CardDescription>Информация об оплате</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">Общая сумма</p>
-                          <p className="text-lg font-bold">{formatPrice(payment.amount)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">Оплачено</p>
-                          <p className="text-lg font-bold text-green-600">{formatPrice(payment.paid)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">Осталось</p>
-                          <p className="text-lg font-bold text-red-600">{formatPrice(payment.remaining)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">Статус</p>
-                          <Badge variant={payment.status === 'completed' ? 'default' : 'destructive'}>
-                            {payment.status === 'completed' ? 'Оплачено' : 
-                             payment.status === 'partial' ? 'Частично' : 'Не оплачено'}
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <PaymentComponent
+                    key={payment.id}
+                    paymentId={payment.id}
+                    courseTitle={course?.title || 'Неизвестный курс'}
+                    amount={payment.amount}
+                    paid={payment.paid}
+                    remaining={payment.remaining}
+                    status={payment.status}
+                  />
                 );
               })}
             </div>
@@ -220,25 +206,7 @@ export const StudentDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="chat" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Сообщения с преподавателями</CardTitle>
-                <CardDescription>
-                  Общайтесь с преподавателями для получения помощи и консультаций
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Пока нет сообщений
-                  </h3>
-                  <p className="text-gray-600">
-                    Здесь будут отображаться ваши сообщения с преподавателями
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <ChatComponent />
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">
