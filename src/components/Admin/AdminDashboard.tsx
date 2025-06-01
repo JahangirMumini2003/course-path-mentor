@@ -8,6 +8,8 @@ import { useData } from '../../hooks/useData';
 import { ChatComponent } from '../Chat/ChatComponent';
 import { AdminStats } from './AdminStats';
 import { CourseManagement } from './CourseManagement';
+import { LessonManagement } from './LessonManagement';
+import { TestManagement } from './TestManagement';
 import { StudentManagement } from './StudentManagement';
 import { FinanceManagement } from './FinanceManagement';
 import { Course, User } from '../../types';
@@ -65,6 +67,8 @@ export const AdminDashboard: React.FC = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList>
             <TabsTrigger value="courses">Курсы</TabsTrigger>
+            <TabsTrigger value="lessons">Уроки</TabsTrigger>
+            <TabsTrigger value="tests">Тесты</TabsTrigger>
             <TabsTrigger value="students">Студенты</TabsTrigger>
             <TabsTrigger value="finances">Финансы</TabsTrigger>
             <TabsTrigger value="messages">Сообщения</TabsTrigger>
@@ -76,6 +80,14 @@ export const AdminDashboard: React.FC = () => {
               onAddCourse={handleAddCourse}
               onDeleteCourse={handleDeleteCourse}
             />
+          </TabsContent>
+
+          <TabsContent value="lessons" className="space-y-4">
+            <LessonManagement courses={courses} />
+          </TabsContent>
+
+          <TabsContent value="tests" className="space-y-4">
+            <TestManagement courses={courses} />
           </TabsContent>
 
           <TabsContent value="students" className="space-y-4">

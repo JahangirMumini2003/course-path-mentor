@@ -21,6 +21,42 @@ export interface Course {
   createdAt: string;
 }
 
+export interface Lesson {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  duration: string;
+  order: number;
+  completed?: boolean;
+}
+
+export interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
+
+export interface Test {
+  id: string;
+  courseId: string;
+  title: string;
+  questions: Question[];
+  passingScore: number;
+}
+
+export interface TestResult {
+  id: string;
+  userId: string;
+  testId: string;
+  courseId: string;
+  score: number;
+  passed: boolean;
+  answeredAt: string;
+}
+
 export interface Enrollment {
   id: string;
   userId: string;

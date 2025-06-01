@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen } from 'lucide-react';
@@ -11,13 +12,23 @@ interface MyCoursesProps {
 }
 
 export const MyCourses: React.FC<MyCoursesProps> = ({ courses, enrollments }) => {
+  const navigate = useNavigate();
+
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/course/${courseId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {courses.map((course) => {
           const enrollment = enrollments.find(e => e.courseId === course.id);
           return (
-            <Card key={course.id}>
+            <Card 
+              key={course.id} 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => handleCourseClick(course.id)}
+            >
               <CardHeader>
                 <CardTitle className="text-lg">{course.title}</CardTitle>
                 <CardDescription>{course.instructor}</CardDescription>
