@@ -146,6 +146,20 @@ export const useData = () => {
     return newLesson;
   };
 
+  const updateLesson = (updatedLesson: Lesson) => {
+    const updatedLessons = lessons.map(lesson => 
+      lesson.id === updatedLesson.id ? updatedLesson : lesson
+    );
+    setLessons(updatedLessons);
+    updateLocalStorage('lessons', updatedLessons);
+  };
+
+  const deleteLesson = (lessonId: string) => {
+    const updatedLessons = lessons.filter(lesson => lesson.id !== lessonId);
+    setLessons(updatedLessons);
+    updateLocalStorage('lessons', updatedLessons);
+  };
+
   const addTest = (test: Omit<Test, 'id'>) => {
     const newTest: Test = {
       ...test,
@@ -245,6 +259,8 @@ export const useData = () => {
     testResults,
     addCourse,
     addLesson,
+    updateLesson,
+    deleteLesson,
     addTest,
     submitTestResult,
     enrollStudent,
