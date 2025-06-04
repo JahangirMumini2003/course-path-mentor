@@ -34,12 +34,12 @@ export const AuthForm: React.FC = () => {
     if (success) {
       toast({
         title: "Успешный вход",
-        description: "Добро пожаловать в систему!",
+        description: "Добро пожаловать в МФТИ Learn!",
       });
     } else {
       toast({
         title: "Ошибка входа",
-        description: "Неверный email или пароль",
+        description: "Неверный email/пароль или аккаунт администратора не подтвержден",
         variant: "destructive",
       });
     }
@@ -54,10 +54,17 @@ export const AuthForm: React.FC = () => {
     const success = await register(registerData);
     
     if (success) {
-      toast({
-        title: "Регистрация успешна",
-        description: "Добро пожаловать в систему!",
-      });
+      if (registerData.role === 'admin') {
+        toast({
+          title: "Заявка отправлена",
+          description: "Ваша заявка на роль администратора отправлена на рассмотрение",
+        });
+      } else {
+        toast({
+          title: "Регистрация успешна",
+          description: "Добро пожаловать в МФТИ Learn!",
+        });
+      }
     } else {
       toast({
         title: "Ошибка регистрации",
@@ -70,14 +77,19 @@ export const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center mfti-gradient p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="mfti-logo text-2xl">
+              МФТИ
+            </div>
+          </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            Образовательная платформа
+            МФТИ Learn
           </CardTitle>
           <CardDescription>
-            Войдите в систему или создайте новый аккаунт
+            Образовательная платформа Московского физико-технического института
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -111,7 +123,7 @@ export const AuthForm: React.FC = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full mfti-gradient" disabled={isLoading}>
                   {isLoading ? 'Вход...' : 'Войти'}
                 </Button>
               </form>
@@ -169,13 +181,13 @@ export const AuthForm: React.FC = () => {
                     id="role"
                     value={registerData.role}
                     onChange={(e) => setRegisterData({ ...registerData, role: e.target.value as 'student' | 'admin' })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="student">Студент</option>
                     <option value="admin">Администратор</option>
                   </select>
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full mfti-gradient" disabled={isLoading}>
                   {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
                 </Button>
               </form>

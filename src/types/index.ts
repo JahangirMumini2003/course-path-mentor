@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -7,6 +6,7 @@ export interface User {
   role: 'student' | 'admin';
   avatar?: string;
   createdAt: string;
+  isApproved?: boolean; // Для подтверждения админов
 }
 
 export interface Course {

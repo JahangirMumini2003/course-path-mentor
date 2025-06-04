@@ -15,12 +15,17 @@ export const StudentHeader: React.FC = () => {
     <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Образовательная платформа
-          </h1>
+          <div className="flex items-center space-x-3">
+            <div className="mfti-logo">
+              МФТИ
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              МФТИ Learn
+            </h1>
+          </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              <div className="w-8 h-8 mfti-gradient rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user && getInitials(user.firstName, user.lastName)}
               </div>
               <span className="text-sm font-medium text-gray-700">

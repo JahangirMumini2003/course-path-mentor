@@ -10,7 +10,7 @@ import { StudentWelcome } from './StudentWelcome';
 import { MyCourses } from './MyCourses';
 import { AvailableCourses } from './AvailableCourses';
 import { StudentFinances } from './StudentFinances';
-import { StudentProfile } from './StudentProfile';
+import { EditableStudentProfile } from './EditableStudentProfile';
 
 export const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -74,7 +74,7 @@ export const StudentDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="profile" className="space-y-6">
-            <StudentProfile />
+            <EditableStudentProfile />
           </TabsContent>
         </Tabs>
       </main>

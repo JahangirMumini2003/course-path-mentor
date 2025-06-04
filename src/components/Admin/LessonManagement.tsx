@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,17 +5,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit, Trash } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Plus, Edit, Trash, Save, X } from 'lucide-react';
 import { Course, Lesson } from '../../types';
 import { useData } from '../../hooks/useData';
+import { toast } from '@/components/ui/use-toast';
 
 interface LessonManagementProps {
   courses: Course[];
 }
 
 export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) => {
-  const { lessons, addLesson } = useData();
+  const { lessons, addLesson, updateLesson, deleteLesson } = useData();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<string>('');
   const [formData, setFormData] = useState({
     title: '',
@@ -30,11 +33,31 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
     e.preventDefault();
     if (!selectedCourse) return;
 
-    addLesson({
-      courseId: selectedCourse,
-      ...formData,
-    });
+    if (editingLesson) {
+      updateLesson({
+        ...editingLesson,
+        ...formData,
+      });
+      toast({
+        title: "Урок обновлен",
+        description: "Изменения успешно сохранены",
+      });
+      setEditingLesson(null);
+    } else {
+      addLesson({
+        courseId: selectedCourse,
+        ...formData,
+      });
+      toast({
+        title: "Урок добавлен",
+        description: "Новый урок успешно создан",
+      });
+    }
 
+    resetForm();
+  };
+
+  const resetForm = () => {
     setFormData({
       title: '',
       description: '',
@@ -43,6 +66,29 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
       order: 1,
     });
     setShowAddForm(false);
+    setEditingLesson(null);
+  };
+
+  const handleEdit = (lesson: Lesson) => {
+    setEditingLesson(lesson);
+    setSelectedCourse(lesson.courseId);
+    setFormData({
+      title: lesson.title,
+      description: lesson.description,
+      videoUrl: lesson.videoUrl,
+      duration: lesson.duration,
+      order: lesson.order,
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = (lessonId: string) => {
+    deleteLesson(lessonId);
+    setShowDeleteDialog(null);
+    toast({
+      title: "Урок удален",
+      description: "Урок успешно удален из курса",
+    });
   };
 
   const courseLessons = selectedCourse 
@@ -66,8 +112,12 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
         </CardHeader>
         <CardContent>
           {showAddForm && (
-            <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+            <div className="mb-6 p-4 border rounded-lg bg-orange-50">
+              <h3 className="text-lg font-medium mb-4">
+                {editingLesson ? 'Редактировать урок' : 'Добавить новый урок'}
+              </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Курс</label>
@@ -139,9 +189,11 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
 
                 <div className="flex space-x-2">
                   <Button type="submit" disabled={!selectedCourse}>
-                    Добавить урок
+                    <Save className="w-4 h-4 mr-2" />
+                    {editingLesson ? 'Сохранить изменения' : 'Добавить урок'}
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    <X className="w-4 h-4 mr-2" />
                     Отмена
                   </Button>
                 </div>
@@ -184,10 +236,15 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
                     <TableCell>{lesson.duration}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(lesson)}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => setShowDeleteDialog(lesson.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
                           <Trash className="w-4 h-4" />
                         </Button>
                       </div>
@@ -206,6 +263,29 @@ export const LessonManagement: React.FC<LessonManagementProps> = ({ courses }) =
           )}
         </CardContent>
       </Card>
+
+      {/* Диалог подтверждения удаления */}
+      <Dialog open={!!showDeleteDialog} onOpenChange={() => setShowDeleteDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Подтверждение удаления</DialogTitle>
+            <DialogDescription>
+              Вы уверены, что хотите удалить этот урок? Это действие нельзя отменить.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(null)}>
+              Отмена
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => showDeleteDialog && handleDelete(showDeleteDialog)}
+            >
+              Удалить
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

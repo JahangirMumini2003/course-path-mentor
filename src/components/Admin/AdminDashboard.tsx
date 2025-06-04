@@ -12,6 +12,7 @@ import { LessonManagement } from './LessonManagement';
 import { TestManagement } from './TestManagement';
 import { StudentManagement } from './StudentManagement';
 import { FinanceManagement } from './FinanceManagement';
+import { AdminApproval } from './AdminApproval';
 import { Course, User } from '../../types';
 
 export const AdminDashboard: React.FC = () => {
@@ -19,7 +20,6 @@ export const AdminDashboard: React.FC = () => {
   const { courses, enrollments, payments, messages, setCourses } = useData();
   const [activeTab, setActiveTab] = useState('courses');
 
-  // Получаем всех студентов
   const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
   const students = allUsers.filter((u: User) => u.role === 'student');
 
@@ -41,15 +41,22 @@ export const AdminDashboard: React.FC = () => {
     localStorage.setItem('courses', JSON.stringify(updatedCourses));
   };
 
+  const isMainAdmin = user?.email === 'admin@mail.ru';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Админ-панель</h1>
-              <p className="text-gray-600">Добро пожаловать, {user?.firstName} {user?.lastName}</p>
+            <div className="flex items-center space-x-3">
+              <div className="mfti-logo">
+                МФТИ
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">МФТИ Learn - Админ-панель</h1>
+                <p className="text-gray-600">Добро пожаловать, {user?.firstName} {user?.lastName}</p>
+              </div>
             </div>
             <Button variant="outline" onClick={logout}>
               <LogOut className="w-4 h-4 mr-2" />
@@ -60,10 +67,8 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
         <AdminStats courses={courses} students={students} payments={payments} />
 
-        {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList>
             <TabsTrigger value="courses">Курсы</TabsTrigger>
@@ -72,6 +77,7 @@ export const AdminDashboard: React.FC = () => {
             <TabsTrigger value="students">Студенты</TabsTrigger>
             <TabsTrigger value="finances">Финансы</TabsTrigger>
             <TabsTrigger value="messages">Сообщения</TabsTrigger>
+            {isMainAdmin && <TabsTrigger value="approval">Подтверждение админов</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="courses" className="space-y-4">
@@ -109,6 +115,12 @@ export const AdminDashboard: React.FC = () => {
           <TabsContent value="messages" className="space-y-4">
             <ChatComponent />
           </TabsContent>
+
+          {isMainAdmin && (
+            <TabsContent value="approval" className="space-y-4">
+              <AdminApproval />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
